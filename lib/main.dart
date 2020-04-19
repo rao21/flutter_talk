@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+import 'PlantsModel.dart';
 import 'detail.dart';
 
 void main() => runApp(MyApp());
@@ -18,6 +22,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
+Future<PlantList> loadStudent() async {
+  String jsonString = await rootBundle.loadString('assets/data.json');;
+  final jsonResponse = json.decode(jsonString);
+  PlantList plants = new PlantList.fromJson(jsonResponse);
+  return plants;
+}
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -28,6 +39,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  PlantList plantData;
+  bool _isloading = false;
+   final searchController = TextEditingController();
+   _loadData () async{
+     _isloading = true;
+     try{
+     plantData = await loadStudent();
+     }catch(e){
+
+     }finally{
+       _isloading = false;
+     }
+   }
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
   final plantNames = [
     'Conifers',
     'Houseplant',
@@ -52,13 +81,12 @@ class _MyHomePageState extends State<MyHomePage> {
     '9.99',
     '96.99',
   ];
-
-  final searchController = TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
+        body: !_isloading ?Container(
           color: Color(0xFF15322D),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +102,9 @@ class _MyHomePageState extends State<MyHomePage> {
               Expanded(child: buildCardGrid())
             ],
           ),
-        ),
+        ):Center(child: CircularProgressIndicator(
+          backgroundColor: Color(0xFF15322D),
+        )),
       ),
     );
   }
@@ -83,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return StaggeredGridView.countBuilder(
       padding: EdgeInsets.all(8.0),
       crossAxisCount: 4,
-      itemCount: plantImages.length,
+      itemCount: plantData.data.length,
       itemBuilder: (BuildContext context, int index) => Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
@@ -99,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     borderRadius: BorderRadius.all(Radius.circular(12.0)),
                     child: Image(
                       fit: BoxFit.cover,
-                      image: AssetImage(plantImages[index]),
+                      image: AssetImage(plantData.data[index].image),
                     ),
                   ),
                 ),
@@ -110,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                             child: Text(
-                              plantNames[index],
+                              plantData.data[index].name,
                               style: Theme.of(context)
                                   .textTheme
                                   .subtitle
@@ -123,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: Text(
-                                  '\$ ${price[index]}',
+                                  '\$ ${plantData.data[index].price}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .caption
@@ -173,11 +203,12 @@ class _MyHomePageState extends State<MyHomePage> {
   ListView buildHeaderList() {
     return ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: plantNames.length,
+        //itemCount: plantNames.length,
+        itemCount: plantData.data.length,
         itemBuilder: (context, index) {
           return FlatButton(
             child: Text(
-              plantNames[index],
+              plantData.data[index].name,
               style: TextStyle(
                 color: Color(0xFF879C95),
               ),

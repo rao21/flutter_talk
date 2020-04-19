@@ -1,0 +1,40 @@
+[
+    {
+       "name":"Conifers",
+       "image":"assets/plant-1.jpg",
+       "description":"The monster offer awesome tropical fortage and is a great statement plant,The monster offer awesome tropical fortage and is a great statement plant",
+       "price":"57"
+   },
+   {
+       
+       "name":"Houseplant",
+       "image":"assets/plant-2.jpg",
+       "description":"The monster offer awesome tropical fortage and is a great statement plant,The monster offer awesome tropical fortage and is a great statement plant",
+       "price":"22"
+   },
+   {
+       "name":"Perennial",
+       "image":"assets/plant-3.jpg",
+       "description":"The monster offer awesome tropical fortage and is a great statement plant,The monster offer awesome tropical fortage and is a great statement plant",
+       "price":"31"
+   },
+   {
+    "name":"Ginkgo",
+    "image":"assets/plant-4.jpg",
+    "description":"The monster offer awesome tropical fortage and is a great statement plant,The monster offer awesome tropical fortage and is a great statement plant",
+    "price":"94"
+},
+{
+    
+    "name":"Cycads",
+    "image":"assets/plant-5.jpg",
+    "description":"The monster offer awesome tropical fortage and is a great statement plant,The monster offer awesome tropical fortage and is a great statement plant",
+    "price":"65"
+},
+{
+    "name":"Monocots",
+    "image":"assets/plant-3.jpg",
+    "description":"The monster offer awesome tropical fortage and is a great statement plant,The monster offer awesome tropical fortage and is a great statement plant",
+    "price":"42"
+}
+]
