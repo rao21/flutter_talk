@@ -22,13 +22,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-Future<PlantList> loadStudent() async {
-  String jsonString = await rootBundle.loadString('assets/data.json');;
+Future<PlantList> readData() async {
+  String jsonString = await rootBundle.loadString('assets/data.json');
+  ;
   final jsonResponse = json.decode(jsonString);
   PlantList plants = new PlantList.fromJson(jsonResponse);
   return plants;
 }
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -41,70 +42,49 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   PlantList plantData;
   bool _isloading = false;
-   final searchController = TextEditingController();
-   _loadData () async{
-     _isloading = true;
-     try{
-     plantData = await loadStudent();
-     }catch(e){
+  Color _color = Color(0xFF15322D);
+  final searchController = TextEditingController();
+  void _loadData() async {
+    _isloading = true;
+    try {
+      plantData = await readData();
+    } catch (e) {} finally {
+      _isloading = false;
+    }
+  }
 
-     }finally{
-       _isloading = false;
-     }
-   }
   @override
   void initState() {
     super.initState();
     _loadData();
   }
-  final plantNames = [
-    'Conifers',
-    'Houseplant',
-    'Perennial',
-    'Ginkgo',
-    'Cycads',
-    'Monocots'
-  ];
 
-  var plantImages = [
-    'assets/plant-1.jpg',
-    'assets/plant-2.jpg',
-    'assets/plant-3.jpg',
-    'assets/plant-4.jpg',
-    'assets/plant-5.jpg',
-  ];
-
-  var price = [
-    '7.85',
-    '4.00',
-    '12.99',
-    '9.99',
-    '96.99',
-  ];
-  
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: !_isloading ?Container(
-          color: Color(0xFF15322D),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: buildSearchField(),
-              ),
-              SizedBox(
-                height: 30.0,
-                child: buildHeaderList(),
-              ),
-              Expanded(child: buildCardGrid())
-            ],
-          ),
-        ):Center(child: CircularProgressIndicator(
-          backgroundColor: Color(0xFF15322D),
-        )),
+        body: !_isloading
+            ? Container(
+                color: _color,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: buildSearchField(),
+                    ),
+                    SizedBox(
+                      height: 30.0,
+                      child: buildHeaderList(),
+                    ),
+                    Expanded(child: buildCardGrid())
+                  ],
+                ),
+              )
+            : Center(
+                child: CircularProgressIndicator(
+                backgroundColor: _color,
+              )),
       ),
     );
   }
@@ -203,7 +183,6 @@ class _MyHomePageState extends State<MyHomePage> {
   ListView buildHeaderList() {
     return ListView.builder(
         scrollDirection: Axis.horizontal,
-        //itemCount: plantNames.length,
         itemCount: plantData.data.length,
         itemBuilder: (context, index) {
           return FlatButton(
