@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:plants/PlantsModel.dart';
 
-//#080608
-//#fefdfd
 class Details extends StatefulWidget {
-  Details({Key key, this.title}) : super(key: key);
+  final PlantsModel plant;
+  Details({Key key, this.title,@required this.plant}) : super(key: key);
 
   final String title;
 
@@ -17,9 +16,10 @@ class _Details extends State<Details> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: OrientationBuilder(builder: (context, orientation) {
-      return DetailUi(
-              orientation: orientation,
-            );
+      return DetailUI(
+        orientation: orientation,
+        plant: widget.plant,
+      );
     }));
   }
 }
@@ -41,13 +41,15 @@ Widget _customAddBtn() {
   );
 }
 
-class DetailUi extends StatelessWidget {
+class DetailUI extends StatelessWidget {
   final Widget widget;
+  final PlantsModel plant;
   final Orientation orientation;
-  DetailUi({
+  DetailUI({
     Key key,
     this.widget,
     this.orientation,
+    this.plant,
   }) : super(key: key);
 
   @override
@@ -55,11 +57,11 @@ class DetailUi extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(color: Color(0xFF15322D)),
       child: Stack(
-        children: <Widget>[ 
+        children: <Widget>[
           Align(
-            alignment: orientation == Orientation.portrait 
-            ?Alignment.topCenter  
-            :Alignment.topLeft,
+            alignment: orientation == Orientation.portrait
+                ? Alignment.topCenter
+                : Alignment.topLeft,
             child: Container(
               decoration: BoxDecoration(
                   color: Colors.white10,
@@ -68,26 +70,25 @@ class DetailUi extends StatelessWidget {
                         'https://images.pexels.com/photos/2001154/pexels-photo-2001154.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                       ),
                       fit: BoxFit.cover)),
-                      width: orientation == Orientation.portrait 
-                              ? MediaQuery.of(context).size.width  
-                              : MediaQuery.of(context).size.width / 2,
-                      height: orientation == Orientation.portrait 
-                              ? MediaQuery.of(context).size.height /1.6
-                              : MediaQuery.of(context).size.height,
-                             
+              width: orientation == Orientation.portrait
+                  ? MediaQuery.of(context).size.width
+                  : MediaQuery.of(context).size.width / 2,
+              height: orientation == Orientation.portrait
+                  ? MediaQuery.of(context).size.height / 1.6
+                  : MediaQuery.of(context).size.height,
             ),
           ),
           Align(
-            alignment: orientation == Orientation.portrait 
-            ? Alignment.bottomCenter
-            :Alignment.topRight,
+            alignment: orientation == Orientation.portrait
+                ? Alignment.bottomCenter
+                : Alignment.topRight,
             child: Container(
-              width: orientation == Orientation.portrait 
-                     ? MediaQuery.of(context).size.width
-                     : MediaQuery.of(context).size.width / 1.8,
-              height: orientation == Orientation.portrait 
-                              ? MediaQuery.of(context).size.height/1.8
-                              : MediaQuery.of(context).size.height,
+              width: orientation == Orientation.portrait
+                  ? MediaQuery.of(context).size.width
+                  : MediaQuery.of(context).size.width / 1.8,
+              height: orientation == Orientation.portrait
+                  ? MediaQuery.of(context).size.height / 1.8
+                  : MediaQuery.of(context).size.height,
               decoration: orientation == Orientation.portrait
                   ? BoxDecoration(
                       color: Color(0xFF15322D),
@@ -110,7 +111,7 @@ class DetailUi extends StatelessWidget {
                     ),
                     SizedBox(height: 20.0),
                     Text(
-                      "Monstera",
+                       plant.name,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 30,
@@ -118,13 +119,13 @@ class DetailUi extends StatelessWidget {
                     ),
                     SizedBox(height: 10.0),
                     Text(
-                      "759",
+                      plant.price,
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                     SizedBox(height: 40.0),
                     Text(
-                      "The monster offer awesome tropical fortage and is a great statement plant,The monster offer awesome tropical fortage and is a great statement plant",
-                      style: TextStyle(color: Colors.white, fontSize: 15),
+                     plant.description,
+                     style: TextStyle(color: Colors.white, fontSize: 15),
                     ),
                     SizedBox(height: 20.0),
                     Row(

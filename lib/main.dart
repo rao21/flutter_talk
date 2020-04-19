@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
 
 Future<PlantList> readData() async {
   String jsonString = await rootBundle.loadString('assets/data.json');
-  ;
   final jsonResponse = json.decode(jsonString);
   PlantList plants = new PlantList.fromJson(jsonResponse);
   return plants;
@@ -151,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Details()),
+                                        builder: (context) => Details(plant: plantData.data[index],)),
                                   );
                                 },
                               )
