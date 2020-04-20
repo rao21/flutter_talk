@@ -2,187 +2,193 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plants/PlantsModel.dart';
 
-class Details extends StatefulWidget {
-  final PlantsModel plant;
-  Details({Key key, this.title,@required this.plant}) : super(key: key);
+class DetailScreen extends StatefulWidget {
+  DetailScreen({Key key, @required this.plant}) : super(key: key);
 
-  final String title;
+  final PlantsModel plant;
 
   @override
   _Details createState() => _Details();
 }
 
-class _Details extends State<Details> {
+class _Details extends State<DetailScreen> {
+  final _themeColor = Color(0xFF15322D);
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: OrientationBuilder(builder: (context, orientation) {
-      return DetailUI(
-        orientation: orientation,
-        plant: widget.plant,
-      );
-    }));
+    final screenSize = MediaQuery.of(context).size;
+    final textColor = Colors.white;
+
+    return Scaffold(
+      body: OrientationBuilder(builder: (context, orientation) {
+        return Container(
+          decoration: BoxDecoration(color: _themeColor),
+          child: Stack(
+            children: <Widget>[
+              buildImage(screenSize, orientation),
+              buildDetailWidget(screenSize, textColor, orientation),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Align buildImage(Size screenSize, Orientation orientation) {
+    return Align(
+      alignment: orientation == Orientation.portrait
+          ? Alignment.topCenter
+          : Alignment.topLeft,
+      child: Container(
+        width: orientation == Orientation.portrait
+            ? screenSize.width
+            : screenSize.width / 2,
+        height: orientation == Orientation.portrait
+            ? screenSize.height / 1.6
+            : screenSize.height,
+        decoration: BoxDecoration(
+          color: Colors.white10,
+          image: DecorationImage(
+            image: ExactAssetImage(widget.plant.image),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Align buildDetailWidget(
+      Size screenSize, Color textColor, Orientation orientation) {
+    return Align(
+      alignment: orientation == Orientation.portrait
+          ? Alignment.bottomCenter
+          : Alignment.topRight,
+      child: Container(
+        width: orientation == Orientation.portrait
+            ? screenSize.width
+            : screenSize.width / 1.8,
+        height: orientation == Orientation.portrait
+            ? screenSize.height / 1.8
+            : screenSize.height,
+        decoration: orientation == Orientation.portrait
+            ? BoxDecoration(
+                color: _themeColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(40.0),
+                  topRight: const Radius.circular(40.0),
+                ),
+              )
+            : BoxDecoration(
+                color: _themeColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(40.0),
+                  bottomLeft: const Radius.circular(40.0),
+                ),
+              ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Text(
+                "--- Plant",
+                style: Theme.of(context)
+                    .textTheme
+                    .body1
+                    .copyWith(color: textColor),
+              ),
+              SizedBox(height: 20.0),
+              Text(
+                widget.plant.name,
+                style: Theme.of(context)
+                    .textTheme
+                    .headline
+                    .copyWith(color: textColor),
+              ),
+              SizedBox(height: 8.0),
+              Text(
+                '\$ ${widget.plant.price}',
+                style: Theme.of(context)
+                    .textTheme
+                    .title
+                    .copyWith(color: textColor),
+              ),
+              SizedBox(height: 36.0),
+              Text(
+                widget.plant.description,
+                style: Theme.of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(color: textColor),
+              ),
+              SizedBox(height: 24.0),
+              Row(
+                children: <Widget>[
+                  _calculationButton(false),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Text(
+                      "1",
+                      style: Theme.of(context)
+                          .textTheme
+                          .body1
+                          .copyWith(color: textColor),
+                    ),
+                  ),
+                  _calculationButton(true),
+                ],
+              ),
+              SizedBox(height: 24.0),
+              Row(
+                children: <Widget>[
+                  RaisedButton(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    color: _themeColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: BorderSide(color: textColor),
+                    ),
+                    onPressed: () {},
+                    child: Icon(
+                      Icons.favorite,
+                      color: textColor,
+                    ),
+                  ),
+                  SizedBox(width: 16.0),
+                  Expanded(
+                    child: RaisedButton(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      color: textColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        side: BorderSide(color: textColor),
+                      ),
+                      onPressed: () {},
+                      child: Text('Add To Cart'),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
-Widget _customAddBtn() {
+Widget _calculationButton(bool isAddition) {
   return SizedBox(
     height: 30,
     width: 40,
     child: OutlineButton(
         borderSide: BorderSide(width: 1.0, color: Colors.white),
         child: Text(
-          "+",
+          isAddition ? "+" : "-",
           style: TextStyle(
             color: Colors.white,
-            fontSize: 20,
           ),
         ),
         onPressed: () {}),
   );
-}
-
-class DetailUI extends StatelessWidget {
-  final Widget widget;
-  final PlantsModel plant;
-  final Orientation orientation;
-  DetailUI({
-    Key key,
-    this.widget,
-    this.orientation,
-    this.plant,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(color: Color(0xFF15322D)),
-      child: Stack(
-        children: <Widget>[
-          Align(
-            alignment: orientation == Orientation.portrait
-                ? Alignment.topCenter
-                : Alignment.topLeft,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white10,
-                  image: DecorationImage(
-                      image: NetworkImage(
-                        'https://images.pexels.com/photos/2001154/pexels-photo-2001154.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-                      ),
-                      fit: BoxFit.cover)),
-              width: orientation == Orientation.portrait
-                  ? MediaQuery.of(context).size.width
-                  : MediaQuery.of(context).size.width / 2,
-              height: orientation == Orientation.portrait
-                  ? MediaQuery.of(context).size.height / 1.6
-                  : MediaQuery.of(context).size.height,
-            ),
-          ),
-          Align(
-            alignment: orientation == Orientation.portrait
-                ? Alignment.bottomCenter
-                : Alignment.topRight,
-            child: Container(
-              width: orientation == Orientation.portrait
-                  ? MediaQuery.of(context).size.width
-                  : MediaQuery.of(context).size.width / 1.8,
-              height: orientation == Orientation.portrait
-                  ? MediaQuery.of(context).size.height / 1.8
-                  : MediaQuery.of(context).size.height,
-              decoration: orientation == Orientation.portrait
-                  ? BoxDecoration(
-                      color: Color(0xFF15322D),
-                      borderRadius: new BorderRadius.only(
-                          topLeft: const Radius.circular(40.0),
-                          topRight: const Radius.circular(40.0)))
-                  : BoxDecoration(
-                      color: Color(0xFF15322D),
-                      borderRadius: new BorderRadius.only(
-                          topLeft: const Radius.circular(40.0),
-                          bottomLeft: const Radius.circular(40.0))),
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Text(
-                      "---Plant",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    SizedBox(height: 20.0),
-                    Text(
-                       plant.name,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    Text(
-                      plant.price,
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                    ),
-                    SizedBox(height: 40.0),
-                    Text(
-                     plant.description,
-                     style: TextStyle(color: Colors.white, fontSize: 15),
-                    ),
-                    SizedBox(height: 20.0),
-                    Row(
-                      children: <Widget>[
-                        _customAddBtn(),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 16.0, right: 16.0),
-                          child: Text(
-                            "1",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        _customAddBtn(),
-                      ],
-                    ),
-                    SizedBox(height: 20.0),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 50,
-                          width: 60,
-                          child: RaisedButton(
-                            color: Color(0xFF15322D),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(8.0),
-                                side: BorderSide(color: Colors.white)),
-                            onPressed: () {},
-                            child: Icon(
-                              Icons.favorite,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 20.0),
-                        Expanded(
-                          child: SizedBox(
-                            height: 50,
-                            child: RaisedButton(
-                                color: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        new BorderRadius.circular(8.0),
-                                    side: BorderSide(color: Colors.white)),
-                                onPressed: () {},
-                                child: Text('Add To Cart')),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
