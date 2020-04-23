@@ -13,7 +13,6 @@ class DetailScreen extends StatefulWidget {
 
 class _Details extends State<DetailScreen> {
   final _themeColor = Color(0xFF15322D);
-  final _accentColor = Color(0xFF879C95);
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -22,7 +21,6 @@ class _Details extends State<DetailScreen> {
     return Scaffold(
       body: OrientationBuilder(builder: (context, orientation) {
         return Container(
-          decoration: BoxDecoration(color: _accentColor),
           child: Stack(
             children: <Widget>[
               buildImage(screenSize, orientation),
@@ -40,18 +38,18 @@ class _Details extends State<DetailScreen> {
           ? Alignment.topCenter
           : Alignment.topLeft,
       child: Container(
-         width: MediaQuery.of(context).size.width < 600 //orientation == Orientation.portrait
+         width: orientation == Orientation.portrait //orientation == Orientation.portrait
             ? screenSize.width
-            : screenSize.width / 1,
-        height: MediaQuery.of(context).size.width < 600 // orientation == Orientation.portrait
-            ? screenSize.height / 1.8
+            : screenSize.width / 1.8,
+        height: orientation == Orientation.portrait // orientation == Orientation.portrait
+            ? screenSize.height / 2
             : screenSize.height,
-        decoration: MediaQuery.of(context).size.width < 600
+        decoration:orientation == Orientation.portrait
         ? BoxDecoration(
           color: Colors.white10,
           image: DecorationImage(
             image: ExactAssetImage(widget.plant.image),
-            fit: BoxFit.fill,
+            fit: BoxFit.cover,
             alignment: Alignment.topCenter
           ),
         ):BoxDecoration(
@@ -65,20 +63,24 @@ class _Details extends State<DetailScreen> {
     );
   }
 
+
+
+
+
   Align buildDetailWidget(
       Size screenSize, Color textColor, Orientation orientation) {
     return Align(
-      alignment: MediaQuery.of(context).size.width < 600//orientation == Orientation.portrait
+      alignment: orientation == Orientation.portrait//orientation == Orientation.portrait
           ? Alignment.bottomCenter
-          : Alignment.topRight,
+          : Alignment.bottomRight,
       child: Container(
-        width: MediaQuery.of(context).size.width < 600 //orientation == Orientation.portrait
+        width: orientation == Orientation.portrait //orientation == Orientation.portrait
             ? screenSize.width
-            : screenSize.width / 1.8,
-        height: MediaQuery.of(context).size.width < 600 // orientation == Orientation.portrait
-            ? screenSize.height / 1.8
-            : screenSize.height,
-        decoration: MediaQuery.of(context).size.width < 600 //orientation == Orientation.portrait
+            : screenSize.width  / 1.8,
+        height: orientation == Orientation.portrait// orientation == Orientation.portrait
+            ? screenSize.height / 2
+            : screenSize.height ,
+        decoration: orientation == Orientation.portrait //orientation == Orientation.portrait
             ? BoxDecoration(
                 color: _themeColor,
                 borderRadius: BorderRadius.only(
@@ -172,7 +174,7 @@ class _Details extends State<DetailScreen> {
                         borderRadius: BorderRadius.circular(8.0),
                         side: BorderSide(color: textColor),
                       ),
-                      onPressed: () {},
+                      onPressed: () {print(orientation);},
                       child: Text('Add To Cart'),
                     ),
                   ),
