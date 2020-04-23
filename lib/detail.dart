@@ -13,7 +13,7 @@ class DetailScreen extends StatefulWidget {
 
 class _Details extends State<DetailScreen> {
   final _themeColor = Color(0xFF15322D);
-
+  final _accentColor = Color(0xFF879C95);
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -22,7 +22,7 @@ class _Details extends State<DetailScreen> {
     return Scaffold(
       body: OrientationBuilder(builder: (context, orientation) {
         return Container(
-          decoration: BoxDecoration(color: _themeColor),
+          decoration: BoxDecoration(color: _accentColor),
           child: Stack(
             children: <Widget>[
               buildImage(screenSize, orientation),
@@ -40,20 +40,28 @@ class _Details extends State<DetailScreen> {
           ? Alignment.topCenter
           : Alignment.topLeft,
       child: Container(
-        width: orientation == Orientation.portrait
+         width: MediaQuery.of(context).size.width < 600 //orientation == Orientation.portrait
             ? screenSize.width
-            : screenSize.width / 2,
-        height: orientation == Orientation.portrait
-            ? screenSize.height / 1.6
+            : screenSize.width / 1.8,
+        height: MediaQuery.of(context).size.width < 600 // orientation == Orientation.portrait
+            ? screenSize.height / 1.8
             : screenSize.height,
-        decoration: BoxDecoration(
+        decoration: MediaQuery.of(context).size.width < 600
+        ? BoxDecoration(
           color: Colors.white10,
           image: DecorationImage(
             image: ExactAssetImage(widget.plant.image),
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
+            alignment: Alignment.topCenter
           ),
-        ),
-      ),
+        ):BoxDecoration(
+          color: Colors.orange,
+          image: DecorationImage(
+            image: ExactAssetImage(widget.plant.image),
+            fit: BoxFit.fill,
+            alignment: Alignment.topCenter
+          ),
+      ))
     );
   }
 
@@ -89,6 +97,7 @@ class _Details extends State<DetailScreen> {
           padding: EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               Text(
                 "--- Plant",
@@ -97,7 +106,7 @@ class _Details extends State<DetailScreen> {
                     .body1
                     .copyWith(color: textColor),
               ),
-              SizedBox(height: 20.0),
+             // SizedBox(height: 20.0),
               Text(
                 widget.plant.name,
                 style: Theme.of(context)
@@ -105,7 +114,7 @@ class _Details extends State<DetailScreen> {
                     .headline
                     .copyWith(color: textColor),
               ),
-              SizedBox(height: 8.0),
+             // SizedBox(height: 8.0),
               Text(
                 '\$ ${widget.plant.price}',
                 style: Theme.of(context)
@@ -113,7 +122,7 @@ class _Details extends State<DetailScreen> {
                     .title
                     .copyWith(color: textColor),
               ),
-              SizedBox(height: 36.0),
+             // SizedBox(height: 36.0),
               Text(
                 widget.plant.description,
                 style: Theme.of(context)
@@ -121,7 +130,7 @@ class _Details extends State<DetailScreen> {
                     .subhead
                     .copyWith(color: textColor),
               ),
-              SizedBox(height: 24.0),
+             // SizedBox(height: 24.0),
               Row(
                 children: <Widget>[
                   _calculationButton(false),
@@ -138,7 +147,7 @@ class _Details extends State<DetailScreen> {
                   _calculationButton(true),
                 ],
               ),
-              SizedBox(height: 24.0),
+             // SizedBox(height: 24.0),
               Row(
                 children: <Widget>[
                   RaisedButton(
