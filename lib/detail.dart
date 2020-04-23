@@ -42,7 +42,7 @@ class _Details extends State<DetailScreen> {
       child: Container(
          width: MediaQuery.of(context).size.width < 600 //orientation == Orientation.portrait
             ? screenSize.width
-            : screenSize.width / 1.8,
+            : screenSize.width / 1,
         height: MediaQuery.of(context).size.width < 600 // orientation == Orientation.portrait
             ? screenSize.height / 1.8
             : screenSize.height,
