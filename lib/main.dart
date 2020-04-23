@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -7,12 +9,13 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'PlantsModel.dart';
 import 'detail.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(DevicePreview(builder: (context) => MyApp(), enabled: !kReleaseMode,));
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: DevicePreview.appBuilder,
       title: 'Flutter Karachi',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -44,29 +47,40 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: !_isLoading
-            ? Container(
-                color: _themeColor,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: buildSearchField(),
-                    ),
-                    SizedBox(
-                      height: 30.0,
-                      child: buildHeaderList(),
-                    ),
-                    Expanded(child: buildCardGrid())
-                  ],
-                ),
-              )
-            : Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(_themeColor),
-                ),
-              ),
+          // body: Center(child: Text('Flutter for YOU!')),
+          body: _mainContainer()),
+    );
+  }
+
+  Center _loader() {
+    return Center(
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(_themeColor),
+      ),
+    );
+  }
+
+  Container _mainContainer() {
+    return Container(
+      color: _themeColor,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: buildSearchField(),
+            // child: Text('Child 1'),
+          ),
+          SizedBox(
+            height: 30.0,
+            child: buildHeaderList(),
+            // child: Text('Child 2'),
+          ),
+          Expanded(
+            child: buildCardGrid(),
+            // child: Text('Child 3'),
+          )
+        ],
       ),
     );
   }
@@ -230,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _isLoading = true;
     });
     try {
-      plantData = await readData();
+      plantData = await readDataFromFile();
     } catch (e) {
       print(e);
     } finally {
@@ -240,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<PlantList> readData() async {
+  Future<PlantList> readDataFromFile() async {
     String jsonString = await rootBundle.loadString('assets/data.json');
     final jsonResponse = json.decode(jsonString);
     return PlantList.fromJson(jsonResponse);

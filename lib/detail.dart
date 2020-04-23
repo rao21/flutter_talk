@@ -60,17 +60,17 @@ class _Details extends State<DetailScreen> {
   Align buildDetailWidget(
       Size screenSize, Color textColor, Orientation orientation) {
     return Align(
-      alignment: orientation == Orientation.portrait
+      alignment: MediaQuery.of(context).size.width < 600//orientation == Orientation.portrait
           ? Alignment.bottomCenter
           : Alignment.topRight,
       child: Container(
-        width: orientation == Orientation.portrait
+        width: MediaQuery.of(context).size.width < 600 //orientation == Orientation.portrait
             ? screenSize.width
             : screenSize.width / 1.8,
-        height: orientation == Orientation.portrait
+        height: MediaQuery.of(context).size.width < 600 // orientation == Orientation.portrait
             ? screenSize.height / 1.8
             : screenSize.height,
-        decoration: orientation == Orientation.portrait
+        decoration: MediaQuery.of(context).size.width < 600 //orientation == Orientation.portrait
             ? BoxDecoration(
                 color: _themeColor,
                 borderRadius: BorderRadius.only(
