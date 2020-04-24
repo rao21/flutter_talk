@@ -9,7 +9,10 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'PlantsModel.dart';
 import 'detail.dart';
 
-void main() => runApp(DevicePreview(builder: (context) => MyApp(), enabled: !kReleaseMode,));
+void main() => runApp(DevicePreview(
+      builder: (context) => MyApp(),
+      enabled: !kReleaseMode,
+    ));
 
 class MyApp extends StatelessWidget {
   @override
@@ -33,6 +36,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   PlantList plantData;
   bool _isLoading = false;
+  bool isLargeScreen;
   final _themeColor = Color(0xFF15322D);
   final _accentColor = Color(0xFF879C95);
   final searchController = TextEditingController();
@@ -47,8 +51,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          // body: Center(child: Text('Flutter for YOU!')),
-          body: _mainContainer()),
+        // body: Center(child: Text('Flutter for YOU!')),
+        body: _isLoading ? _loader() : _mainContainer(),
+      ),
     );
   }
 
@@ -61,18 +66,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Container _mainContainer() {
+    if (MediaQuery.of(context).orientation == Orientation.portrait)
+      isLargeScreen = MediaQuery.of(context).size.width > 600 ? true : false;
+    else
+      isLargeScreen = isLargeScreen;
+
     return Container(
       color: _themeColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(
+                left: 16.0, right: 16.0, top: 16.0, bottom: 8.0),
             child: buildSearchField(),
             // child: Text('Child 1'),
           ),
           SizedBox(
-            height: 30.0,
+            height: isLargeScreen ? 48.0 : 36.0,
             child: buildHeaderList(),
             // child: Text('Child 2'),
           ),
@@ -133,13 +144,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return Column(
       children: <Widget>[
         buildPlantName(index, context),
+        SizedBox(height: isLargeScreen ? 24.0 : 0.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             buildPriceText(index, context),
             buildViewDetailButton(context, index)
           ],
-        )
+        ),
+        SizedBox(height: isLargeScreen ? 36.0 : 0.0)
       ],
     );
   }
@@ -149,10 +162,15 @@ class _MyHomePageState extends State<MyHomePage> {
       padding: const EdgeInsets.only(left: 8.0, top: 8.0),
       child: Text(
         plantData.data[index].name,
-        style: Theme.of(context)
-            .textTheme
-            .subtitle
-            .copyWith(color: Color(0xFF46554E)),
+        style: isLargeScreen
+            ? Theme.of(context)
+                .textTheme
+                .display2
+                .copyWith(color: Color(0xFF46554E), fontWeight: FontWeight.bold)
+            : Theme.of(context)
+                .textTheme
+                .subtitle
+                .copyWith(color: Color(0xFF46554E)),
       ),
     );
   }
@@ -161,9 +179,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return FlatButton(
       child: Text(
         'View details',
-        style: TextStyle(
-          color: Color(0xFF19806D),
-        ),
+        style: isLargeScreen
+            ? Theme.of(context)
+                .textTheme
+                .display1
+                .copyWith(color: Color(0xFF19806D), fontWeight: FontWeight.bold)
+            : Theme.of(context)
+                .textTheme
+                .body2
+                .copyWith(color: Color(0xFF19806D)),
       ),
       onPressed: () {
         Navigator.push(
@@ -183,10 +207,15 @@ class _MyHomePageState extends State<MyHomePage> {
       padding: const EdgeInsets.only(left: 8.0),
       child: Text(
         '\$ ${plantData.data[index].price}',
-        style: Theme.of(context)
-            .textTheme
-            .caption
-            .copyWith(color: Color(0xFF5D6562)),
+        style: isLargeScreen
+            ? Theme.of(context)
+                .textTheme
+                .display1
+                .copyWith(color: Color(0xFF5D6562))
+            : Theme.of(context)
+                .textTheme
+                .caption
+                .copyWith(color: Color(0xFF5D6562)),
       ),
     );
   }
@@ -211,9 +240,9 @@ class _MyHomePageState extends State<MyHomePage> {
           color: _accentColor,
         ),
         hintText: 'Search here',
-        hintStyle: TextStyle(
-          color: _accentColor,
-        ),
+        hintStyle: isLargeScreen
+            ? Theme.of(context).textTheme.display1.copyWith(color: _accentColor)
+            : Theme.of(context).textTheme.body1.copyWith(color: _accentColor),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: _accentColor),
           borderRadius: BorderRadius.all(const Radius.circular(32.0)),
@@ -230,7 +259,13 @@ class _MyHomePageState extends State<MyHomePage> {
           return FlatButton(
             child: Text(
               plantData.data[index].name,
-              style: TextStyle(color: _accentColor),
+              style: isLargeScreen
+                  ? Theme.of(context).textTheme.display1.copyWith(
+                      color: _accentColor, fontWeight: FontWeight.bold)
+                  : Theme.of(context)
+                      .textTheme
+                      .body2
+                      .copyWith(color: _accentColor),
             ),
             onPressed: () {
               print(index);
