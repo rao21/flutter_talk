@@ -40,7 +40,27 @@ class _MyHomePageState extends State<MyHomePage> {
   final _themeColor = Color(0xFF15322D);
   final _accentColor = Color(0xFF879C95);
   final searchController = TextEditingController();
+ 
+  void _loadData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      plantData = await readDataFromFile();
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
+  Future<PlantList> readDataFromFile() async {
+    String jsonString = await rootBundle.loadString('assets/data.json');
+    final jsonResponse = json.decode(jsonString);
+    return PlantList.fromJson(jsonResponse);
+  }
   @override
   void initState() {
     super.initState();
@@ -50,8 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      bottom: false,
       child: Scaffold(
-        // body: Center(child: Text('Flutter for YOU!')),
+        //body: Center(child: Text('Flutter for YOU!')),
         body: _isLoading ? _loader() : _mainContainer(),
       ),
     );
@@ -74,27 +95,70 @@ class _MyHomePageState extends State<MyHomePage> {
     return Container(
       color: _themeColor,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(
                 left: 16.0, right: 16.0, top: 16.0, bottom: 8.0),
             child: buildSearchField(),
-            // child: Text('Child 1'),
+            //child: Text('Child 1'),
           ),
           SizedBox(
             height: isLargeScreen ? 48.0 : 36.0,
             child: buildHeaderList(),
-            // child: Text('Child 2'),
+           // child: Text('Child 2'),
           ),
           Expanded(
             child: buildCardGrid(),
-            // child: Text('Child 3'),
+            //child: Text('Child 3'),
           )
         ],
       ),
     );
   }
+  TextFormField buildSearchField() {
+    return TextFormField(
+      controller: searchController,
+      decoration: InputDecoration(
+        suffixIcon: IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.search),
+          color: _accentColor,
+        ),
+        hintText: 'Search here',
+        hintStyle: isLargeScreen
+            ? Theme.of(context).textTheme.display1.copyWith(color: _accentColor)
+            : Theme.of(context).textTheme.body1.copyWith(color: _accentColor),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: _accentColor),
+          borderRadius: BorderRadius.all(const Radius.circular(32.0)),
+        ),
+      ),
+    );
+  }
+ListView buildHeaderList() {
+    return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: plantData.data.length,
+        itemBuilder: (context, index) {
+          return FlatButton(
+            child: Text(
+              plantData.data[index].name,
+              style: isLargeScreen
+                  ? Theme.of(context).textTheme.display1.copyWith(
+                      color: _accentColor, fontWeight: FontWeight.bold)
+                  : Theme.of(context)
+                      .textTheme
+                      .body2
+                      .copyWith(color: _accentColor),
+            ),
+            onPressed: () {
+              print(index);
+            },
+          );
+        });
+  }
+
 
   Widget buildCardGrid() {
     return StaggeredGridView.countBuilder(
@@ -125,7 +189,15 @@ class _MyHomePageState extends State<MyHomePage> {
           StaggeredTile.count(2, index.isEven ? 3 : 2),
     );
   }
-
+ClipRRect buildCardImage(int index) {
+    return ClipRRect(
+      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+      child: Image(
+        fit: BoxFit.cover,
+        image: AssetImage(plantData.data[index].image),
+      ),
+    );
+  }
   ClipRRect buildAddButton() {
     return ClipRRect(
       borderRadius: BorderRadius.only(
@@ -220,78 +292,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  ClipRRect buildCardImage(int index) {
-    return ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(12.0)),
-      child: Image(
-        fit: BoxFit.cover,
-        image: AssetImage(plantData.data[index].image),
-      ),
-    );
-  }
+  
 
-  TextFormField buildSearchField() {
-    return TextFormField(
-      controller: searchController,
-      decoration: InputDecoration(
-        suffixIcon: IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.search),
-          color: _accentColor,
-        ),
-        hintText: 'Search here',
-        hintStyle: isLargeScreen
-            ? Theme.of(context).textTheme.display1.copyWith(color: _accentColor)
-            : Theme.of(context).textTheme.body1.copyWith(color: _accentColor),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: _accentColor),
-          borderRadius: BorderRadius.all(const Radius.circular(32.0)),
-        ),
-      ),
-    );
-  }
-
-  ListView buildHeaderList() {
-    return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: plantData.data.length,
-        itemBuilder: (context, index) {
-          return FlatButton(
-            child: Text(
-              plantData.data[index].name,
-              style: isLargeScreen
-                  ? Theme.of(context).textTheme.display1.copyWith(
-                      color: _accentColor, fontWeight: FontWeight.bold)
-                  : Theme.of(context)
-                      .textTheme
-                      .body2
-                      .copyWith(color: _accentColor),
-            ),
-            onPressed: () {
-              print(index);
-            },
-          );
-        });
-  }
-
-  void _loadData() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      plantData = await readDataFromFile();
-    } catch (e) {
-      print(e);
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<PlantList> readDataFromFile() async {
-    String jsonString = await rootBundle.loadString('assets/data.json');
-    final jsonResponse = json.decode(jsonString);
-    return PlantList.fromJson(jsonResponse);
-  }
 }
