@@ -41,6 +41,27 @@ class _MyHomePageState extends State<MyHomePage> {
   final _accentColor = Color(0xFF879C95);
   final searchController = TextEditingController();
 
+  void _loadData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      plantData = await readDataFromFile();
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<PlantList> readDataFromFile() async {
+    String jsonString = await rootBundle.loadString('assets/data.json');
+    final jsonResponse = json.decode(jsonString);
+    return PlantList.fromJson(jsonResponse);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -50,8 +71,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      bottom: false,
       child: Scaffold(
-        // body: Center(child: Text('Flutter for YOU!')),
+        //body: Center(child: Text('Flutter for YOU!')),
         body: _isLoading ? _loader() : _mainContainer(),
       ),
     );
@@ -69,12 +91,12 @@ class _MyHomePageState extends State<MyHomePage> {
     if (MediaQuery.of(context).orientation == Orientation.portrait)
       isLargeScreen = MediaQuery.of(context).size.width > 600 ? true : false;
     else
-      isLargeScreen = isLargeScreen;  
+      isLargeScreen = isLargeScreen;
 
     return Container(
       color: _themeColor,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(
@@ -91,6 +113,50 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+
+  TextFormField buildSearchField() {
+    return TextFormField(
+      controller: searchController,
+      decoration: InputDecoration(
+        suffixIcon: IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.search),
+          color: _accentColor,
+        ),
+        hintText: 'Search here',
+        hintStyle: isLargeScreen
+            ? Theme.of(context).textTheme.display1.copyWith(color: _accentColor)
+            : Theme.of(context).textTheme.body1.copyWith(color: _accentColor),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: _accentColor),
+          borderRadius: BorderRadius.all(const Radius.circular(32.0)),
+        ),
+      ),
+    );
+  }
+
+  ListView buildHeaderList() {
+    return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: plantData.data.length,
+        itemBuilder: (context, index) {
+          return FlatButton(
+            child: Text(
+              plantData.data[index].name,
+              style: isLargeScreen
+                  ? Theme.of(context).textTheme.display1.copyWith(
+                      color: _accentColor, fontWeight: FontWeight.bold)
+                  : Theme.of(context)
+                      .textTheme
+                      .body2
+                      .copyWith(color: _accentColor),
+            ),
+            onPressed: () {
+              print(index);
+            },
+          );
+        });
   }
 
   Widget buildCardGrid() {
@@ -120,6 +186,16 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       staggeredTileBuilder: (int index) =>
           StaggeredTile.count(2, index.isEven ? 3 : 2),
+    );
+  }
+
+  ClipRRect buildCardImage(int index) {
+    return ClipRRect(
+      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+      child: Image(
+        fit: BoxFit.cover,
+        image: AssetImage(plantData.data[index].image),
+      ),
     );
   }
 
@@ -215,80 +291,5 @@ class _MyHomePageState extends State<MyHomePage> {
                 .copyWith(color: Color(0xFF5D6562)),
       ),
     );
-  }
-
-  ClipRRect buildCardImage(int index) {
-    return ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(12.0)),
-      child: Image(
-        fit: BoxFit.cover,
-        image: AssetImage(plantData.data[index].image),
-      ),
-    );
-  }
-
-  TextFormField buildSearchField() {
-    return TextFormField(
-      controller: searchController,
-      decoration: InputDecoration(
-        suffixIcon: IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.search),
-          color: _accentColor,
-        ),
-        hintText: 'Search here',
-        hintStyle: isLargeScreen
-            ? Theme.of(context).textTheme.display1.copyWith(color: _accentColor)
-            : Theme.of(context).textTheme.body1.copyWith(color: _accentColor),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: _accentColor),
-          borderRadius: BorderRadius.all(const Radius.circular(32.0)),
-        ),
-      ),
-    );
-  }
-
-  ListView buildHeaderList() {
-    return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: plantData.data.length,
-        itemBuilder: (context, index) {
-          return FlatButton(
-            child: Text(
-              plantData.data[index].name,
-              style: isLargeScreen
-                  ? Theme.of(context).textTheme.display1.copyWith(
-                      color: _accentColor, fontWeight: FontWeight.bold)
-                  : Theme.of(context)
-                      .textTheme
-                      .body2
-                      .copyWith(color: _accentColor),
-            ),
-            onPressed: () {
-              print(index);
-            },
-          );
-        });
-  }
-
-  void _loadData() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      plantData = await readDataFromFile();
-    } catch (e) {
-      print(e);
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<PlantList> readDataFromFile() async {
-    String jsonString = await rootBundle.loadString('assets/data.json');
-    final jsonResponse = json.decode(jsonString);
-    return PlantList.fromJson(jsonResponse);
   }
 }
