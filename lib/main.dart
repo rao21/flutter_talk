@@ -217,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Column(
       children: <Widget>[
         buildPlantName(index, context),
-        SizedBox(height: isLargeScreen ? 24.0 : Offset.zero),
+        SizedBox(height: isLargeScreen ? 24.0 : 0.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -225,7 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
             buildViewDetailButton(context, index)
           ],
         ),
-        SizedBox(height: isLargeScreen ? 36.0 : Offset.zero)
+        SizedBox(height: isLargeScreen ? 36.0 : 0.0)
       ],
     );
   }
