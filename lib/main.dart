@@ -9,10 +9,12 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'PlantsModel.dart';
 import 'detail.dart';
 
-void main() => runApp(DevicePreview(
-      builder: (context) => MyApp(),
-      enabled: !kReleaseMode,
-    ));
+void main() => runApp(
+      DevicePreview(
+        builder: (context) => MyApp(),
+        enabled: !kReleaseMode,
+      ),
+    );
 
 class MyApp extends StatelessWidget {
   @override
@@ -104,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: buildSearchField(),
           ),
           SizedBox(
-            height: isLargeScreen ? 48.0 : 36.0,
+            height: isLargeScreen ? 72.0 : 36.0,
             child: buildHeaderList(),
           ),
           Expanded(
@@ -206,8 +208,8 @@ class _MyHomePageState extends State<MyHomePage> {
         bottomLeft: Radius.circular(12.0),
       ),
       child: Container(
-        padding: EdgeInsets.all(4.0),
-        child: Icon(Icons.add),
+        padding: EdgeInsets.all(isLargeScreen ? 24.0 : 8.0),
+        child: Icon(Icons.add,  size: isLargeScreen ? 54.0 : 24.0,),
         color: Color(0xFFC1CEC7),
       ),
     );

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plants/PlantsModel.dart';
 
+final _themeColor = Color(0xFF15322D);
+final _textColor = Colors.white;
+
 class DetailScreen extends StatefulWidget {
   DetailScreen({Key key, @required this.plant}) : super(key: key);
 
@@ -12,19 +15,19 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _Details extends State<DetailScreen> {
-  final _themeColor = Color(0xFF15322D);
+  bool isLargeScreen;
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final textColor = Colors.white;
 
     return Scaffold(
       body: OrientationBuilder(builder: (context, orientation) {
+        bool isPortraitMode = orientation == Orientation.portrait;
         return Container(
           child: Stack(
             children: <Widget>[
-              buildImage(screenSize, orientation),
-              buildDetailWidget(screenSize, textColor, orientation),
+              buildImage(screenSize, isPortraitMode),
+              buildDetailWidget(screenSize, isPortraitMode),
             ],
           ),
         );
@@ -32,154 +35,120 @@ class _Details extends State<DetailScreen> {
     );
   }
 
-  Align buildImage(Size screenSize, Orientation orientation) {
+  Align buildImage(Size screenSize, bool isPortraitMode) {
     return Align(
-        alignment: orientation == Orientation.portrait
-            ? Alignment.topCenter
-            : Alignment.topLeft,
-        child: Container(
-            width: orientation ==
-                    Orientation.portrait //orientation == Orientation.portrait
-                ? screenSize.width
-                : screenSize.width / 1.8,
-            height: orientation ==
-                    Orientation.portrait // orientation == Orientation.portrait
-                ? screenSize.height / 2
-                : screenSize.height,
-            decoration: orientation == Orientation.portrait
-                ? BoxDecoration(
-                    color: _themeColor,
-                    image: DecorationImage(
-                        image: ExactAssetImage(widget.plant.image),
-                        fit: BoxFit.cover,
-                        alignment: Alignment.topCenter),
-                  )
-                : BoxDecoration(
-                    //color: Colors.orange,
-                    image: DecorationImage(
-                        image: ExactAssetImage(widget.plant.image),
-                        fit: BoxFit.fill,
-                        alignment: Alignment.topCenter),
-                  )));
+      alignment: isPortraitMode ? Alignment.topCenter : Alignment.topLeft,
+      child: Container(
+        width: isPortraitMode ? screenSize.width : screenSize.width / 2,
+        height: isPortraitMode ? screenSize.height / 1.8 : screenSize.height,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: ExactAssetImage(widget.plant.image),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
   }
 
-  Widget buildDetailWidget(
-      Size screenSize, Color textColor, Orientation orientation) {
+  Widget buildDetailWidget(Size screenSize, bool isPortraitMode) {
+    if (isPortraitMode)
+      isLargeScreen = screenSize.width > 600 ? true : false;
+    else
+      isLargeScreen = isLargeScreen;
+
+    final textTheme = Theme.of(context)
+        .textTheme
+        .apply(displayColor: _textColor, bodyColor: _textColor);
+    const radius = Radius.circular(40.0);
+
     return Align(
-      alignment: orientation ==
-              Orientation.portrait //orientation == Orientation.portrait
-          ? Alignment.bottomCenter
-          : Alignment.bottomRight,
-      
+      alignment:
+          isPortraitMode ? Alignment.bottomCenter : Alignment.centerRight,
       child: Container(
-        width: orientation ==
-                Orientation.portrait //orientation == Orientation.portrait
-            ? screenSize.width
-            : screenSize.width / 1.8,
-        height: orientation ==
-                Orientation.portrait // orientation == Orientation.portrait
-            ? screenSize.height / 2
-            : screenSize.height,
-        decoration: orientation ==
-                Orientation.portrait //orientation == Orientation.portrait
-            ? BoxDecoration(
-                color: _themeColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(40.0),
-                  topRight: const Radius.circular(40.0),
+        width: isPortraitMode ? screenSize.width : screenSize.width / 1.8,
+        height: isPortraitMode ? screenSize.height / 2 : screenSize.height,
+        decoration: BoxDecoration(
+          color: _themeColor,
+          borderRadius: isPortraitMode
+              ? BorderRadius.only(
+                  topLeft: radius,
+                  topRight: radius,
+                )
+              : BorderRadius.only(
+                  topLeft: radius,
+                  bottomLeft: radius,
                 ),
-              )
-            : BoxDecoration(
-                color: _themeColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(40.0),
-                  bottomLeft: const Radius.circular(40.0),
-                ),
-              ),
+        ),
         child: Padding(
-          padding: EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 8.0),
+          padding: const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               Text(
                 "--- Plant",
-                style: Theme.of(context)
-                    .textTheme
-                    .body1
-                    .copyWith(color: textColor),
+                style: isLargeScreen ? textTheme.headline : textTheme.caption,
               ),
-              // SizedBox(height: 20.0),
               Text(
                 widget.plant.name,
-                style: Theme.of(context)
-                    .textTheme
-                    .headline
-                    .copyWith(color: textColor),
+                style: isLargeScreen ? textTheme.display2 : textTheme.title,
               ),
-              // SizedBox(height: 8.0),
               Text(
                 '\$ ${widget.plant.price}',
-                style: Theme.of(context)
-                    .textTheme
-                    .title
-                    .copyWith(color: textColor),
+                style: isLargeScreen ? textTheme.display1 : textTheme.body2,
               ),
-              // SizedBox(height: 36.0),
               Text(
                 widget.plant.description,
-                style: Theme.of(context)
-                    .textTheme
-                    .subhead
-                    .copyWith(color: textColor),
+                style: isLargeScreen ? textTheme.display1 : textTheme.body1,
               ),
-              // SizedBox(height: 24.0),
               Row(
                 children: <Widget>[
-                  _calculationButton(false),
+                  _raisedButton(
+                    Text('-',
+                        style: isLargeScreen
+                            ? textTheme.display1
+                            : textTheme.body2),
+                    true,
+                  ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: isLargeScreen ? 36.0 : 24.0),
                     child: Text(
-                      "1",
-                      style: Theme.of(context)
-                          .textTheme
-                          .body1
-                          .copyWith(color: textColor),
+                      '1',
+                      style: isLargeScreen
+                          ? textTheme.display1
+                          : textTheme.subhead,
                     ),
                   ),
-                  _calculationButton(true),
+                  _raisedButton(
+                    Text('+',
+                        style: isLargeScreen
+                            ? textTheme.display1
+                            : textTheme.body2),
+                    true,
+                  ),
                 ],
               ),
-              // SizedBox(height: 24.0),
               Row(
                 children: <Widget>[
-                  RaisedButton(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    color: _themeColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: BorderSide(color: textColor),
-                    ),
-                    onPressed: () {},
-                    child: Icon(
+                  _raisedButton(
+                    Icon(
                       Icons.favorite,
-                      color: textColor,
+                      color: _textColor,
                     ),
+                    true,
                   ),
                   SizedBox(width: 16.0),
                   Expanded(
-                    child: RaisedButton(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      color: textColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        side: BorderSide(color: textColor),
-                      ),
-                      onPressed: () {
-                        print(orientation);
-                      },
-                      child: Text('Add To Cart'),
-                    ),
+                    child: _raisedButton(
+                        Text(
+                          'Add To Cart',
+                          style: isLargeScreen
+                              ? textTheme.display1.copyWith(color: Colors.black)
+                              : textTheme.body2.copyWith(color: Colors.black),
+                        ),
+                        false),
                   ),
                 ],
               )
@@ -189,20 +158,20 @@ class _Details extends State<DetailScreen> {
       ),
     );
   }
-}
 
-Widget _calculationButton(bool isAddition) {
-  return SizedBox(
-    height: 30,
-    width: 40,
-    child: OutlineButton(
-        borderSide: BorderSide(width: 1.0, color: Colors.white),
-        child: Text(
-          isAddition ? "+" : "-",
-          style: TextStyle(
-            color: Colors.white,
-          ),
+  Widget _raisedButton(Widget child, bool isThemeColor) {
+    return RaisedButton(
+      onPressed: () {},
+      child: child,
+      padding: EdgeInsets.symmetric(vertical: isLargeScreen ? 16.0 : 8.0),
+      color: isThemeColor ? _themeColor : _textColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        side: BorderSide(
+          width: isLargeScreen ? 2.0 : 1.0,
+          color: _textColor,
         ),
-        onPressed: () {}),
-  );
+      ),
+    );
+  }
 }
