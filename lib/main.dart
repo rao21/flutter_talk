@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (MediaQuery.of(context).orientation == Orientation.portrait)
       isLargeScreen = MediaQuery.of(context).size.width > 600 ? true : false;
     else
-      isLargeScreen = isLargeScreen;
+      isLargeScreen = isLargeScreen;  
 
     return Container(
       color: _themeColor,
@@ -80,16 +80,13 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: const EdgeInsets.only(
                 left: 16.0, right: 16.0, top: 16.0, bottom: 8.0),
             child: buildSearchField(),
-            // child: Text('Child 1'),
           ),
           SizedBox(
             height: isLargeScreen ? 48.0 : 36.0,
             child: buildHeaderList(),
-            // child: Text('Child 2'),
           ),
           Expanded(
             child: buildCardGrid(),
-            // child: Text('Child 3'),
           )
         ],
       ),
@@ -144,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Column(
       children: <Widget>[
         buildPlantName(index, context),
-        SizedBox(height: isLargeScreen ? 24.0 : 0.0),
+        SizedBox(height: isLargeScreen ? 24.0 : Offset.zero),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -152,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
             buildViewDetailButton(context, index)
           ],
         ),
-        SizedBox(height: isLargeScreen ? 36.0 : 0.0)
+        SizedBox(height: isLargeScreen ? 36.0 : Offset.zero)
       ],
     );
   }
